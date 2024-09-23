@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'pages/home.dart' show HomePage;
 import 'pages/distribution.dart' show GraphSelector;
 import 'pages/geometry.dart' show GeometryView;
+import 'pages/MtViewer.dart' show Mtviewer;
 
 enum MenuItem {
   home,
-  profile,
-  settings,
+  dis,
+  geo,
+  mtdoc
 }
 
 void main() {
@@ -44,10 +46,12 @@ class CorePageState extends State<CorePage> {
     switch (menu) {
       case MenuItem.home:
         return const HomePage();
-      case MenuItem.profile:
+      case MenuItem.dis:
         return const GraphSelector();
-      case MenuItem.settings:
+      case MenuItem.geo:
         return const GeometryView();
+      case MenuItem.mtdoc:
+        return const Mtviewer();
       default:
         return const HomePage();
     }
@@ -58,10 +62,12 @@ class CorePageState extends State<CorePage> {
     switch (menu) {
       case MenuItem.home:
         return '主页';
-      case MenuItem.profile:
+      case MenuItem.dis:
         return '概率分布';
-      case MenuItem.settings:
+      case MenuItem.geo:
         return '几何模拟';
+      case MenuItem.mtdoc:
+        return '核心文档';
       default:
         return '主页';
     }
@@ -72,10 +78,12 @@ class CorePageState extends State<CorePage> {
     switch (menu) {
       case MenuItem.home:
         return Icons.home;
-      case MenuItem.profile:
+      case MenuItem.dis:
         return Icons.person;
-      case MenuItem.settings:
+      case MenuItem.geo:
         return Icons.settings;
+      case MenuItem.mtdoc:
+        return Icons.document_scanner;
       default:
         return Icons.home;
     }

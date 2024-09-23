@@ -1,4 +1,4 @@
-import 'dart:math' show Point, sin, pow, cos;
+ import 'dart:math' show Point, sin, pow, cos, exp;
 
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -33,14 +33,19 @@ class GeometryViewState extends State<GeometryView> {
   List<ScatterSpot> dataep = [];
 
   final pointInput = TextEditingController(text: '1.0');
-  final mm = GeometryGenerator.curve((double x) => sin(x) + cos(x) + pow(x, 1.25), x1: 0, x2: 10.5, size: 100);
+  final mm = GeometryGenerator.curve((double x) => sin(x) + cos(x) + exp(pow(x, 0.4)), x1: 0, x2: 10.5, size: 100);
   late LineChartBarData defcurve;
-  bool isOk = false;
+  List<FlSpot> tangent = [];
+  List<FlSpot> points = [];
 
   @override
   void initState() {
     defcurve = LineChartBarData(
-      spots: List.generate(100, (e)=>FlSpot(mm.at(e, 0), mm.at(e, 1)))
+      isCurved: true,
+      dotData: const FlDotData(show: false,),
+      belowBarData: BarAreaData(show: false),
+      barWidth: 4,
+      spots: List.generate(100, (e)=>FlSpot(mm.at(e, 0), mm.at(e, 1))),
     );
     super.initState();
   }
@@ -60,6 +65,34 @@ class GeometryViewState extends State<GeometryView> {
     xInput.dispose();
     pointInput.dispose();
     super.dispose();
+  }
+
+  Widget gradBuild(){
+    fn(double x) => pow(x, 2.0) as double;
+    MatrixType mtx = MatrixType.linspace(start: -10, end: 10, row: 1, column: 500);
+    MatrixType mty = mtx.customize(fn);
+    MatrixType grady = mtx.diff_center(fn);
+    return LineChart(
+      LineChartData(
+        lineBarsData: [
+          LineChartBarData(
+              color: Colors.black87,
+              isCurved: true,
+              dotData: const FlDotData(show: false,),
+              belowBarData: BarAreaData(show: false),
+              barWidth: 4,
+              spots: List.generate(500, (e) => FlSpot(mtx.at(0, e), mty.at(0, e)))
+          ),
+          LineChartBarData(
+              color: Colors.red,
+              isCurved: true,
+              dotData: const FlDotData(show: false,),
+              belowBarData: BarAreaData(show: false),
+              spots: List.generate(500, (e) => FlSpot(mtx.at(0, e), grady.at(0, e)))
+          )
+        ],
+      ),
+    );
   }
 
   Widget curveBuild(){
@@ -84,20 +117,56 @@ class GeometryViewState extends State<GeometryView> {
                 )
             ),
             ElevatedButton(
-                onPressed: (){},
+                onPressed: (){
+                  setState(() {
+                    double x = double.parse(pointInput.text);
+                    x = x > 0 && x <= 10? x:1.0;
+                    fn(double x) => -sin(x) + cos(x) + 0.4 * pow(x, -0.6) * exp(pow(x, 0.4));
+                    double k = fn(x);
+                    double y = sin(x) + cos(x) + exp(pow(x, 0.4));
+                    double b = y - k * x;
+                    MatrixType mt = GeometryGenerator.linewb(start: 0.0, end: 10.0, w: k, b: b, size: 300);
+                    tangent = List.generate(300, (e) =>FlSpot(mt.at(e, 0), mt.at(e, 1)));
+                    points = [FlSpot(x, y)];
+                  });
+                },
                 child: const Text('Run')
             )
           ],
         ),
-        SizedBox(
-          height: 400,
-          child: LineChart(
-            LineChartData(
-              lineBarsData: [
-                defcurve
-              ]
+        tangent.isNotEmpty? SizedBox(
+            height: 400,
+            child:LineChart(
+              LineChartData(
+                lineBarsData: [
+                  defcurve,
+                  LineChartBarData(
+                    color: Colors.black87,
+                    isCurved: true,
+                    dotData: const FlDotData(show: false,),
+                    belowBarData: BarAreaData(show: false),
+                    barWidth: 4,
+                    spots: tangent
+                  ),
+                  LineChartBarData(
+                      color: Colors.red,
+                      isCurved: true,
+                      dotData: const FlDotData(show: true,),
+                      belowBarData: BarAreaData(show: false),
+                      spots: points
+                  )
+                ],
+              ),
             )
-          )
+        ):SizedBox(
+            height: 400,
+            child:LineChart(
+              LineChartData(
+                lineBarsData: [
+                  defcurve
+                ],
+              ),
+            )
         )
       ],
     );
@@ -256,7 +325,7 @@ class GeometryViewState extends State<GeometryView> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 4,
+      length: 5,
       child: Scaffold(
         appBar: AppBar(
           bottom: const TabBar(
@@ -264,7 +333,8 @@ class GeometryViewState extends State<GeometryView> {
               Tab(child: Text('贝塞尔函数'),),
               Tab(child: Text('心形'),),
               Tab(child: Text('椭圆'),),
-              Tab(child: Text('曲线与切线'),)
+              Tab(child: Text('曲线与切线'),),
+              Tab(child: Text('梯度（导数）测试'),)
             ],
           ),
         ),
@@ -273,7 +343,8 @@ class GeometryViewState extends State<GeometryView> {
             bezierBuild(),
             heartBuild(),
             epBuild(),
-            curveBuild()
+            curveBuild(),
+            gradBuild()
           ],
         ),
       ),
