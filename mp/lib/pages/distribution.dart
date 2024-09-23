@@ -175,7 +175,7 @@ class GraphSelectorState extends State<GraphSelector> {
                     });
                   },
                   child: const Text('Run')
-              ),z
+              ),
             ],
           ),
           _datanormal.isNotEmpty ? SizedBox(

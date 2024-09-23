@@ -1,4 +1,4 @@
-import 'dart:math' show Point;
+import 'dart:math' show Point, sin, pow, cos;
 
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -24,15 +24,24 @@ class GeometryViewState extends State<GeometryView> {
   List<ScatterSpot> databezier = [];
 
   final xInput = TextEditingController(text: '0.0');
-  bool isEdge = true;
+  bool isEdge1 = true;
   List<ScatterSpot> dataheart = [];
 
   final aInput = TextEditingController(text: '4.0');
   final bInput = TextEditingController(text: '3.0');
+  bool isEdge2 = true;
   List<ScatterSpot> dataep = [];
+
+  final pointInput = TextEditingController(text: '1.0');
+  final mm = GeometryGenerator.curve((double x) => sin(x) + cos(x) + pow(x, 1.25), x1: 0, x2: 10.5, size: 100);
+  late LineChartBarData defcurve;
+  bool isOk = false;
 
   @override
   void initState() {
+    defcurve = LineChartBarData(
+      spots: List.generate(100, (e)=>FlSpot(mm.at(e, 0), mm.at(e, 1)))
+    );
     super.initState();
   }
 
@@ -49,7 +58,49 @@ class GeometryViewState extends State<GeometryView> {
     aInput.dispose();
     bInput.dispose();
     xInput.dispose();
+    pointInput.dispose();
     super.dispose();
+  }
+
+  Widget curveBuild(){
+    return Column(
+      children: [
+        Row(
+          children: [
+            const Text('数量'),
+            Expanded(
+                child: TextField(
+                  textAlign: TextAlign.center,
+                  controller: numInput,
+                  keyboardType: TextInputType.number,
+                )
+            ),
+            const Text('切点'),
+            Expanded(
+                child: TextField(
+                  textAlign: TextAlign.center,
+                  controller: pointInput,
+                  keyboardType: TextInputType.number,
+                )
+            ),
+            ElevatedButton(
+                onPressed: (){},
+                child: const Text('Run')
+            )
+          ],
+        ),
+        SizedBox(
+          height: 400,
+          child: LineChart(
+            LineChartData(
+              lineBarsData: [
+                defcurve
+              ]
+            )
+          )
+        )
+      ],
+    );
   }
 
   Widget epBuild(){
@@ -89,12 +140,12 @@ class GeometryViewState extends State<GeometryView> {
                   keyboardType: TextInputType.number,
                 )
             ),
-            const Text('区域/边缘'),
+            const Text('边缘/区域'),
             Switch(
-                value: isEdge,
+                value: isEdge2,
                 onChanged: (v){
                   setState(() {
-                    isEdge = v;
+                    isEdge2 = v;
                   });
                 }),
             ElevatedButton(
@@ -102,7 +153,7 @@ class GeometryViewState extends State<GeometryView> {
                   int num = int.parse(numInput.text);
                   num = num >= 50 && num <= 2000?num :100;
                   setState(() {
-                    MatrixType mt = isEdge ? GeometryGenerator.ellipse_edge(
+                    MatrixType mt = isEdge2 ? GeometryGenerator.ellipse_edge(
                         size: num,
                         bias: double.parse(biasInput.text),
                         a: double.parse(aInput.text),
@@ -161,12 +212,12 @@ class GeometryViewState extends State<GeometryView> {
                   keyboardType: TextInputType.number,
                 )
             ),
-            const Text('区域/边缘'),
+            const Text('边缘/区域'),
             Switch(
-                value: isEdge,
+                value: isEdge1,
                 onChanged: (v){
                   setState(() {
-                    isEdge = v;
+                    isEdge1 = v;
                   });
                 }),
             ElevatedButton(
@@ -174,7 +225,7 @@ class GeometryViewState extends State<GeometryView> {
                   int num = int.parse(numInput.text);
                   num = num >= 50 && num <= 2000?num :100;
                   setState(() {
-                    MatrixType mt = isEdge ? GeometryGenerator.heart_edge(
+                    MatrixType mt = isEdge1 ? GeometryGenerator.heart_edge(
                       size: num,
                       bias: double.parse(biasInput.text),
                       x_center: double.parse(xInput.text)
@@ -205,7 +256,7 @@ class GeometryViewState extends State<GeometryView> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3,
+      length: 4,
       child: Scaffold(
         appBar: AppBar(
           bottom: const TabBar(
@@ -213,6 +264,7 @@ class GeometryViewState extends State<GeometryView> {
               Tab(child: Text('贝塞尔函数'),),
               Tab(child: Text('心形'),),
               Tab(child: Text('椭圆'),),
+              Tab(child: Text('曲线与切线'),)
             ],
           ),
         ),
@@ -221,6 +273,7 @@ class GeometryViewState extends State<GeometryView> {
             bezierBuild(),
             heartBuild(),
             epBuild(),
+            curveBuild()
           ],
         ),
       ),
