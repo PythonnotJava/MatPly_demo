@@ -25,7 +25,14 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.deepPurple,
       ),
-      home: const CorePage(),
+      home: ConstrainedBox(
+        constraints: const BoxConstraints(
+          minWidth: 400,
+          minHeight: 600,
+        ),
+        child: const CorePage(),
+      )
+      ,
     );
   }
 }

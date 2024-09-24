@@ -13,9 +13,9 @@ dependencies:
   cupertino_icons: ^1.0.8
   path:
   ffi:
-  markdown_widget: ^2.3.2+6
   fl_chart: ^0.69.0
-  pdfx:
+  syncfusion_flutter_pdfviewer: ^27.1.50
+  split_view:
 dev_dependencies:
   flutter_test:
     sdk: flutter
