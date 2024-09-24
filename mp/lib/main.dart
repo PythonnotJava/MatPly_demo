@@ -3,12 +3,14 @@ import 'pages/home.dart' show HomePage;
 import 'pages/distribution.dart' show GraphSelector;
 import 'pages/geometry.dart' show GeometryView;
 import 'pages/MtViewer.dart' show Mtviewer;
+import 'pages/mtoperator.dart' show MtOpBoard;
 
 enum MenuItem {
   home,
   dis,
   geo,
-  mtdoc
+  mtdoc,
+  mtopt
 }
 
 void main() {
@@ -59,6 +61,8 @@ class CorePageState extends State<CorePage> {
         return const GeometryView();
       case MenuItem.mtdoc:
         return const Mtviewer();
+      case MenuItem.mtopt:
+        return MtOpBoard();
       default:
         return const HomePage();
     }
@@ -75,6 +79,8 @@ class CorePageState extends State<CorePage> {
         return '几何模拟';
       case MenuItem.mtdoc:
         return '核心文档';
+      case MenuItem.mtopt:
+        return '案例';
       default:
         return '主页';
     }
@@ -91,6 +97,8 @@ class CorePageState extends State<CorePage> {
         return Icons.settings;
       case MenuItem.mtdoc:
         return Icons.document_scanner;
+      case MenuItem.mtopt:
+        return Icons.temple_buddhist_outlined;
       default:
         return Icons.home;
     }
