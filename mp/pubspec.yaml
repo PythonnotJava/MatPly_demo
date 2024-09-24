@@ -15,7 +15,7 @@ dependencies:
   ffi:
   markdown_widget: ^2.3.2+6
   fl_chart: ^0.69.0
-  flutter_svg_provider: ^1.0.7
+  pdfx:
 dev_dependencies:
   flutter_test:
     sdk: flutter
