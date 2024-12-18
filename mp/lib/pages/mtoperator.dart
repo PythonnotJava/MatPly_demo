@@ -1,8 +1,8 @@
-import 'package:mp/matply/core.dart';
-import 'package:mp/matply/matply.dart';
 import 'package:flutter/material.dart';
 import 'package:split_view/split_view.dart';
 import 'package:flutter_markdown/flutter_markdown.dart' show Markdown;
+
+import '../matply/src/core.dart';
 
 
 // 将一个二维可迭代对象（二维Dataframe）转为markdown表格形式

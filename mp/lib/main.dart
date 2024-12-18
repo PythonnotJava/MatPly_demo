@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mp/pages/QuickView.dart';
 import 'pages/home.dart' show HomePage;
 import 'pages/distribution.dart' show GraphSelector;
 import 'pages/geometry.dart' show GeometryView;
@@ -10,7 +11,8 @@ enum MenuItem {
   dis,
   geo,
   mtdoc,
-  mtopt
+  mtopt,
+  mtquicktest
 }
 
 void main() {
@@ -63,6 +65,8 @@ class CorePageState extends State<CorePage> {
         return const Mtviewer();
       case MenuItem.mtopt:
         return MtOpBoard();
+      case MenuItem.mtquicktest:
+        return const QuickView();
       default:
         return const HomePage();
     }
@@ -81,6 +85,8 @@ class CorePageState extends State<CorePage> {
         return '核心文档';
       case MenuItem.mtopt:
         return '案例';
+      case MenuItem.mtquicktest:
+        return '快速测试';
       default:
         return '主页';
     }
@@ -99,6 +105,8 @@ class CorePageState extends State<CorePage> {
         return Icons.document_scanner;
       case MenuItem.mtopt:
         return Icons.temple_buddhist_outlined;
+      case MenuItem.mtquicktest:
+        return Icons.safety_check;
       default:
         return Icons.home;
     }

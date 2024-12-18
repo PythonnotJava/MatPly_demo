@@ -1,8 +1,9 @@
- import 'dart:math' show Point, sin, pow, cos, exp;
+import 'dart:math' show Point, sin, pow, cos, exp;
 
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:mp/matply/matply.dart';
+import 'custom_curve.dart' show CurveExample;
 
 class GeometryView extends StatefulWidget {
   const GeometryView({super.key});
@@ -65,6 +66,112 @@ class GeometryViewState extends State<GeometryView> {
     xInput.dispose();
     pointInput.dispose();
     super.dispose();
+  }
+
+  Widget spiralBuild(int i) {
+    var future = {
+      0 : CurveExample.spiral,
+      1 : CurveExample.cycloid,
+      2 : CurveExample.sineWave
+    }[i];
+
+    return FutureBuilder(
+        future: future,
+        builder: (context, snapshot){
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return CircularProgressIndicator();
+          } else if (snapshot.hasError) {
+            return Text("Error: ${snapshot.error}");
+          } else if (snapshot.hasData) {
+            MatrixType mt = snapshot.data!;
+            return LineChart(
+              LineChartData(
+                lineBarsData: [
+                  LineChartBarData(
+                      color: Colors.black87,
+                      isCurved: true,
+                      dotData: const FlDotData(show: false,),
+                      belowBarData: BarAreaData(show: false),
+                      barWidth: 4,
+                      spots: List.generate(500, (e) => FlSpot(mt.at(e, 0), mt.at(e, 1))
+                  ),
+                  )
+                ],
+              ),
+            );
+          } else {
+            return Text("Something went wrong");
+          }
+        },
+    );
+  }
+
+  Widget cycloidBuild() {
+    Future<MatrixType> future = CurveExample.cycloid;
+
+    return FutureBuilder(
+      future: future,
+      builder: (context, snapshot){
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator();
+        } else if (snapshot.hasError) {
+          return Text("Error: ${snapshot.error}");
+        } else if (snapshot.hasData) {
+          MatrixType mt = snapshot.data!;
+          return LineChart(
+            LineChartData(
+              lineBarsData: [
+                LineChartBarData(
+                  color: Colors.black87,
+                  isCurved: true,
+                  dotData: const FlDotData(show: false,),
+                  belowBarData: BarAreaData(show: false),
+                  barWidth: 4,
+                  spots: List.generate(500, (e) => FlSpot(mt.at(e, 0), mt.at(e, 1))
+                  ),
+                )
+              ],
+            ),
+          );
+        } else {
+          return Text("Something went wrong");
+        }
+      },
+    );
+  }
+
+  Widget sineWaveBuild() {
+    Future<MatrixType> future = CurveExample.sineWave;
+
+    return FutureBuilder(
+      future: future,
+      builder: (context, snapshot){
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator();
+        } else if (snapshot.hasError) {
+          return Text("Error: ${snapshot.error}");
+        } else if (snapshot.hasData) {
+          MatrixType mt = snapshot.data!;
+          return LineChart(
+            LineChartData(
+              lineBarsData: [
+                LineChartBarData(
+                  color: Colors.black87,
+                  isCurved: true,
+                  dotData: const FlDotData(show: false,),
+                  belowBarData: BarAreaData(show: false),
+                  barWidth: 4,
+                  spots: List.generate(500, (e) => FlSpot(mt.at(e, 0), mt.at(e, 1))
+                  ),
+                )
+              ],
+            ),
+          );
+        } else {
+          return Text("Something went wrong");
+        }
+      },
+    );
   }
 
   Widget gradBuild(){
@@ -324,18 +431,22 @@ class GeometryViewState extends State<GeometryView> {
 
   @override
   Widget build(BuildContext context) {
+    var tabs = const [
+      Tab(child: Text('贝塞尔函数'),),
+      Tab(child: Text('心形'),),
+      Tab(child: Text('椭圆'),),
+      Tab(child: Text('曲线与切线'),),
+      Tab(child: Text('梯度（导数）测试'),),
+      Tab(child: Text('阿基米德螺线'),),
+      Tab(child: Text('摆线测试',),),
+      Tab(child: Text('正弦波测试'),)
+    ];
     return DefaultTabController(
-      length: 5,
+      length: tabs.length,
       child: Scaffold(
         appBar: AppBar(
-          bottom: const TabBar(
-            tabs: [
-              Tab(child: Text('贝塞尔函数'),),
-              Tab(child: Text('心形'),),
-              Tab(child: Text('椭圆'),),
-              Tab(child: Text('曲线与切线'),),
-              Tab(child: Text('梯度（导数）测试'),)
-            ],
+          bottom: TabBar(
+            tabs: tabs,
           ),
         ),
         body: TabBarView(
@@ -344,7 +455,10 @@ class GeometryViewState extends State<GeometryView> {
             heartBuild(),
             epBuild(),
             curveBuild(),
-            gradBuild()
+            gradBuild(),
+            spiralBuild(0),
+            spiralBuild(1),
+            spiralBuild(2)
           ],
         ),
       ),
